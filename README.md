@@ -1,5 +1,6 @@
 # Learning Torch
-These are notes from working a few tutorials on the torch framework.
+These are notes from working a few tutorials on the torch framework. Each one has a few code examples, and usually one exercise. The code examples were mostly hand copied, with my own comments, and a few tiny style things/constant definitions added. The exercise code files end in `ex` and start from w.e starting material the tutorial provides. I tried to stick to torch only/appropriate use of the available modules. 
+
 ## Torch Website - Simple Tutorials
 
 The tutorial on the actual torch site does an interesting thing and walks you through building the same small network in a few different ways. First, it shows you the network as if you only used numpy to build the model. Then, using the basics of torch. In the second version, you hand craft both the forward and backwards passes. The third version uses torch as well, but the backwards pass is handled by the automatic gradient framework built into torch. 
@@ -63,10 +64,6 @@ In the `init` method for the module, we see that the archtiecture of the model s
 
 Ok its a day later and I want to amend the above writing. The linear1 and linear2 are NOT tensors, they are extensions of `nn.Module` in their own right. It looks like being a module means you implicitly expose your `grad_required` fields/ops to the `.parameters()` method. This allows the other things like autograd and optimizers to work on the actual parameters of your model. Very cool, very interesting method of handling modularity and extensibility. 
 
-I got it working! It looks like the losses are actually going down, as intended. There were a couple hang ups while getting the tensors to be the right shape. Mostly it was with respect to getting the right shape of the summed embedding vectors. This was easy once I added some print statements that told me the shapes lol. The trick was to get the transpose of the sumed vectors with the `view((1, -1))` method. I just followed along from the other example to get this right. 
-
-Also of note, no need to muck about with my own tensors and telling the system I want them to have gradients calculated. The `linear` module does exactly what we want: `x*A.T + b`. So I just used that instead of trying to get anything working by hand.  
-
 ### Exercise - Context Bag of Words Approach
 
 The model is that we look at the context of the word, and sum up embedded vectors. These are then used to predict the target word using a single linear function: Ax+b.
@@ -74,3 +71,19 @@ The model is that we look at the context of the word, and sum up embedded vector
 I got it working! It looks like the losses are actually going down, as intended. There were a couple hang ups while getting the tensors to be the right shape. Mostly it was with respect to getting the right shape of the summed embedding vectors. This was easy once I added some print statements that told me the shapes lol. The trick was to get the transpose of the sumed vectors with the `view((1, -1))` method. I just followed along from the other example to get this right. 
 
 Also of note, no need to muck about with my own tensors and telling the system I want them to have gradients calculated. The `linear` module does exactly what we want: `x*A.T + b`. So I just used that instead of trying to get anything working by hand.  
+
+## Torch Website - Sequence Models and LSTM Nets
+
+The tutorial can be found [here](https://pytorch.org/tutorials/beginner/nlp/sequence_models_tutorial.html#sphx-glr-beginner-nlp-sequence-models-tutorial-py).
+
+Files related to this tutorial:
+
+* `tut_torch6_simpleLSTM.py`
+* `tut_torch7_posttagging.py`
+* `tut_torch8_pos_wchar_ex.py`
+
+### Simple LSTM Example
+This mostly goes over the specifics of how torch does sequence data. Of note is the fact that the sequence modules (like the `nn.LSTM` one) can handle a sequence all at once. It's still doing the normal sequence/RNN thing where the items are passed sequentially, and the output and hidden on to the next item's cell. But, now you can just pass a tensor of the entire sequence. The output of these will give you the entire histroy of hiddens and outputs, or just the last one, however you'd like to use it. You can still manually do the sequenceing yourself, or let torch handle it for you. 
+
+The format of this is a 3D tensor, of the following 'shape': |seq|x|mini-batch|x|seq element|. For this example, and most "simple" recurrent/sequence models, the size of a sequence element will be 1 (like 1 word, or 1 character). For us, the size of the mini_batch will be 1 as well. Not sure how you handle mini batches of sequences of different length but its there? The tut doesn't go into it. Should maybe look into the way torch deals with mini-batching.
+

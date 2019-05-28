@@ -33,7 +33,7 @@ print(data[:5])
 
 #### Create your model and train.  
 
-# Implements the linear function over the sum of the embedded context words
+# Implements the linear function over the sum of the embedded context wordsQ
 class CBOW(nn.Module):
     def __init__(self, vocab_size, embedding_dim):
         super(CBOW, self).__init__()
